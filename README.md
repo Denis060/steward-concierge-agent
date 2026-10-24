@@ -1,69 +1,50 @@
-# Steward - a plan-first Concierge agent
+# Steward — a Plan-First Concierge Agent (Google ADK)
 
-Steward is a personal assistant agent. You give it a vague request like
-"sort out my week", and instead of guessing, it **asks the right questions
-first**, makes a plan, and then acts - checking with you before it does
-anything it can't undo (like sending an email).
+> A multi-agent assistant that interviews you, writes a plan, then acts on your real Gmail and Google Calendar through MCP — and never takes an irreversible action without explicit consent.
 
-It is built with Google's Agent Development Kit (ADK) as a multi-agent system.
+![Python](https://img.shields.io/badge/Python-3-blue.svg) ![Google ADK](https://img.shields.io/badge/Google-ADK-4285F4.svg) ![MCP](https://img.shields.io/badge/tools-MCP-black.svg)
+
+## Overview
+
+Steward is a concierge agent built on Google's Agent Development Kit. Instead of acting immediately on a vague request, it follows a **plan-first** loop: clarify → plan → execute, with a consent gate before anything that can't be undone (e.g. sending an email or creating an event).
+
+## Problem / Motivation
+
+Most assistant agents either ask too many questions or act too eagerly. Steward explores the middle ground: ask only what's missing, show the plan, and require confirmation for side effects.
+
+## Approach & tech stack
+
+- **Orchestrator** routes between three sub-agents:
+  - **Interrogator** – asks only for missing details (never re-asks what you already said)
+  - **Planner** – turns the request into a step-by-step plan
+  - **Executor** – carries out the plan using real tools
+- **Tools:** Gmail + Calendar via a local Google Workspace MCP server (`McpToolset` over streamable HTTP)
+- **Conventions:** a reusable "plan-first" skill file (`steward/plan_first_skill.md`) injected into the agents
+- Current date is injected so "tomorrow" / "this week" resolve without asking
+- **Stack:** Python · Google ADK · Gemini 2.5 Flash · Model Context Protocol (MCP)
+
+## Key features
+
+- Plan-first workflow with explicit consent rule for irreversible actions
+- Real calendar and email reads/writes through MCP
+- Minimal-questioning interrogation style
+- Runs in the ADK web UI
+
+## How to run
+
+```bash
+pip install "google-adk[mcp]"
+# 1) start the Workspace MCP server in its own terminal
+uvx workspace-mcp --transport streamable-http --single-user --tools gmail calendar
+# 2) set your Gemini API key (see ADK docs), and USER_EMAIL in steward/agent.py
+# 3) run the agent
+adk web --port 8080
+```
 
 ---
 
-## Run it in 3 steps
+## About the author
 
-You only need your Google AI Studio API key. Nothing else has to be set up yet.
+**Ibrahim Denis Fofanah** — Data Scientist · ML / GenAI (RAG, agents) · BI & analytics · MS Data Science, Pace University (2025)
 
-### 1. Install ADK
-Open a terminal in this folder and run:
-
-```
-pip install google-adk[mcp]
-```
-
-(If you use a virtual environment, activate it first.)
-
-### 2. Paste your API key
-Open the file `steward/.env`. Replace `PASTE_YOUR_AI_STUDIO_KEY_HERE` with
-your real key. Save the file. That's the only secret you need.
-
-### 3. Start it
-From **this** folder (the one with this README), run:
-
-```
-adk web
-```
-
-Open the link it prints (usually http://localhost:8000), pick **steward**
-from the dropdown, and start chatting. Try: *"Help me sort out tomorrow."*
-
-To open it in Antigravity instead: open this whole folder, then run
-`adk web` in Antigravity's terminal.
-
----
-
-## What's real and what's simulated
-
-Right now the agent runs fully, but the parts that touch Gmail, Calendar, and
-Drive return **fake data** on purpose - so it works today with no Google
-sign-in and no setup headaches. You'll see it interrogate, plan, and ask for
-approval correctly; the data behind the tools is just placeholder for now.
-
-Connecting the real Gmail / Calendar / Drive (via MCP) is the next phase.
-
----
-
-## How it's built
-
-| Part | What it does |
-| --- | --- |
-| Orchestrator (`root_agent`) | Routes the request through the steps below |
-| Interrogator | Clarifies the request using your plan-first conventions |
-| Planner | Turns the clarified intent into an ordered plan |
-| Executor | Carries out the plan using tools |
-| Guardian (consent gate) | Stops any irreversible action until you approve |
-
-Your plan-first conventions live in `steward/plan_first_skill.md` - edit that
-file to change how the agent thinks.
-
-The tools the Executor can use are simulated functions in `steward/agent.py`,
-each marked with where the real MCP connection will go in the next phase.
+[LinkedIn](https://www.linkedin.com/in/ibrahim-denis-fofanah/) · [Email](mailto:ibrahim.fofanah.ds@gmail.com) · [Live RAG portfolio project](https://moijey-copilot.vercel.app) · [GitHub](https://github.com/Denis060)
