@@ -36,7 +36,7 @@ Most assistant agents either ask too many questions or act too eagerly. Steward 
 pip install "google-adk[mcp]"
 # 1) start the Workspace MCP server in its own terminal
 uvx workspace-mcp --transport streamable-http --single-user --tools gmail calendar
-# 2) set your Gemini API key (see ADK docs), and USER_EMAIL in steward/agent.py
+# 2) set your Gemini API key (see ADK docs), and export USER_EMAIL=you@gmail.com
 # 3) run the agent
 adk web --port 8080
 ```

@@ -25,6 +25,7 @@ BEFORE RUNNING
 from __future__ import annotations
 
 import datetime
+import os
 from pathlib import Path
 from google.adk.agents import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
@@ -35,8 +36,9 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnecti
 MODEL = "gemini-2.5-flash"
 
 # The user's Google account. The agent uses this whenever a Workspace tool needs
-# an email, so it never has to ask. Change this to your address.
-USER_EMAIL = "ibrahimdenisfofanah060@gmail.com"
+# an email, so it never has to ask. Set it via the USER_EMAIL environment
+# variable (e.g. in a local .env) - never hardcode a personal address here.
+USER_EMAIL = os.environ.get("USER_EMAIL", "you@example.com")
 
 # Today's date, computed fresh every time the agent starts. Injected into the
 # agents so they can resolve "tomorrow" / "this week" without asking the user.
